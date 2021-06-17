@@ -1,0 +1,25 @@
+{
+  "name": "jalib",
+  "version": "1.0.0",
+  "description": "npm module model",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tijariomilitar/jalib.git"
+  },
+  "keywords": [
+    "ja",
+    "rio",
+    "militar",
+    "lib"
+  ],
+  "author": "Henrique Lyra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tijariomilitar/jalib/issues"
+  },
+  "homepage": "https://github.com/tijariomilitar/jalib#readme"
+}
