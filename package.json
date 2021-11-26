@@ -1,7 +1,7 @@
 {
   "name": "jalib",
-  "version": "1.0.0",
-  "description": "npm module model",
+  "version": "1.0.4",
+  "description": "JA back-end framework",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
