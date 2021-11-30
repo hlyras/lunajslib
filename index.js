@@ -130,6 +130,56 @@ JALIB.Query.fillParam = function(key, value, arr) {
 	if(key && value && arr.keys && arr.values){ arr.keys.push(key); arr.values.push(value); } else { return false; };
 };
 
+JALIB.Query.save = function (obj, db){
+	let attributesAsArray = Object.entries(obj);
+	let query = "INSERT INTO "+db+" ";
+	let queryProps = "(";
+	let queryValues = "(";
+	
+	attributesAsArray.forEach(([key, value], index, array) => {
+		if(key && value && index == array.length - 1){
+			queryProps += key +"";
+			queryValues += value +"";
+		} else if(key && value){
+			queryProps += key +",";
+			queryValues += value +",";
+		}
+	});
+
+	queryProps += ")";
+	queryValues += ")";
+
+	query += queryProps +" VALUES "+queryValues+";";
+
+	return query;
+};
+
+JALIB.Query.update = function updateQuery(obj, db, param){
+	let attributesAsArray = Object.entries(obj);
+	let query = "UPDATE "+db+" SET ";
+	if(!param) { return false; }
+	
+	attributesAsArray.forEach(([key, value], index, array) => {
+		if(key && value && index == array.length - 1){
+			query += key +"='"+ value +"' ";
+		} else if(key && value && key != param){
+			query += key +"='"+ value +"', ";
+		};
+	});
+
+	attributesAsArray.forEach(([key, value]) => {
+		if(key == param){
+			if(key && value){
+				query += "WHERE "+ key +"='"+ value +"';";
+			} else {
+				query = false;
+			}
+		}
+	});
+
+	return query;
+};
+
 // -----------
 // Date
 // -----------
@@ -148,6 +198,17 @@ JALIB.date.generate = function() {
 		date = ""+d.getDate()+"-"+parseInt(d.getMonth()+1)+"-"+d.getFullYear();
 	};
 	return date;
+};
+
+// -----------
+// Input Validation
+// -----------
+JALIB.validateEmail = email => {
+  return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
 };
 
 // -----------
