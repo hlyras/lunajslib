@@ -1,6 +1,6 @@
 {
-  "name": "jalib",
-  "version": "1.0.4",
+  "name": "jarmlib",
+  "version": "1.0.40",
   "description": "JA back-end framework",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tijariomilitar/jalib.git"
+    "url": "git+https://github.com/tijariomilitar/jarmlib.git"
   },
   "keywords": [
     "ja",
@@ -19,7 +19,7 @@
   "author": "Henrique Lyra",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/tijariomilitar/jalib/issues"
+    "url": "https://github.com/tijariomilitar/jarmlib/issues"
   },
-  "homepage": "https://github.com/tijariomilitar/jalib#readme"
+  "homepage": "https://github.com/tijariomilitar/jarmlib#readme"
 }

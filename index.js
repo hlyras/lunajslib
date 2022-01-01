@@ -137,12 +137,14 @@ JALIB.Query.save = function (obj, db){
 	let queryValues = "(";
 	
 	attributesAsArray.forEach(([key, value], index, array) => {
-		if(key && value && index == array.length - 1){
-			queryProps += key +"";
-			queryValues += value +"";
-		} else if(key && value){
-			queryProps += key +",";
-			queryValues += value +",";
+		if(typeof value == 'number' || typeof value == 'string'){
+			if(key && value && index == array.length - 1){
+				queryProps += key +"";
+				queryValues += "'"+ value +"'";
+			} else if(key && value){
+				queryProps += key +",";
+				queryValues += "'"+ value +"',";
+			}
 		}
 	});
 
@@ -154,16 +156,18 @@ JALIB.Query.save = function (obj, db){
 	return query;
 };
 
-JALIB.Query.update = function updateQuery(obj, db, param){
+JALIB.Query.update = function (obj, db, param){
 	let attributesAsArray = Object.entries(obj);
 	let query = "UPDATE "+db+" SET ";
 	if(!param) { return false; }
 	
 	attributesAsArray.forEach(([key, value], index, array) => {
-		if(key && value && index == array.length - 1){
-			query += key +"='"+ value +"' ";
-		} else if(key && value && key != param){
-			query += key +"='"+ value +"', ";
+		if(typeof value == 'number' || typeof value == 'string'){
+			if(key && value && index == array.length - 1){
+				query += key +"='"+ value +"' ";
+			} else if(key && value && key != param){
+				query += key +"='"+ value +"', ";
+			};
 		};
 	});
 
@@ -178,6 +182,22 @@ JALIB.Query.update = function updateQuery(obj, db, param){
 	});
 
 	return query;
+};
+
+// -----------
+// convertTo
+// -----------
+JALIB.convertTo = {};
+
+JALIB.convertTo.object = function (target){
+	let obj = {};
+	let attributesAsArray = Object.entries(target);
+	attributesAsArray.forEach(([key, value]) => {
+		if(typeof key != 'function' && typeof value != 'function'){
+			obj[key] = value; 
+		};
+	});
+	return obj; 
 };
 
 // -----------
