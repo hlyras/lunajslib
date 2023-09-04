@@ -90,7 +90,7 @@ JALIB.Query = function () {
 	};
 
 	this.period = function (period) {
-		if (period.start && period.end) {
+		if (period.key && period.start && period.end) {
 			this._period = true;
 
 			this.query += "WHERE " + period.key + ">='" + period.start + "' AND " + period.key + "<='" + period.end + "' ";
