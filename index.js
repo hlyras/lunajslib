@@ -52,7 +52,7 @@ JALIB.Query = function () {
 				if (inners[i].length == 3) {
 					this.query += "INNER JOIN " + inners[i][0] + " ON " + inners[i][1] + "=" + inners[i][2] + " ";
 				} else if (inners[i].length > 3) {
-					this.query += "INNER JOIN " + inners[i][0] + " ON (" + inners[i][1] + "=" + inners[i][2] + " AND " + inners[i][3] + "=" + inners[i][4] + ") ";
+					this.query += "LEFT JOIN " + inners[i][0] + " ON (" + inners[i][1] + "=" + inners[i][2] + " AND " + inners[i][3] + "=" + inners[i][4] + ") ";
 				}
 			};
 		}
