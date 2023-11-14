@@ -4,16 +4,9 @@ const JALIB = {};
 // Query
 // -----------
 JALIB.Query = function () {
-	this._props = false;
-	this._inners = false;
-	this._left = false;
-	this._right = false;
-	this._period = false;
-	this._params = false;
-	this._strict_params = false;
-	this._order_params = false;
-
 	this.query = "";
+	this.values = [];
+	this.whereUsed = false;
 
 	this.select = function () {
 		this.query += "SELECT ";
@@ -22,202 +15,162 @@ JALIB.Query = function () {
 
 	this.props = function (props) {
 		if (props.length) {
-			this._props = true;
-
-			for (let i in props) {
-				if (i == props.length - 1) {
-					this.query += props[i] + " ";
-				} else {
-					this.query += props[i] + ", ";
-				};
-			};
-		};
+			this.query += props.join(", ");
+		} else if (!this.query.includes("FROM")) {
+			this.query += "*";
+		}
 		return this;
 	};
 
 	this.table = function (table) {
-		if (!this._props) {
-			this.query += "* FROM " + table + " ";
-		} else {
-			this.query += "FROM " + table + " ";
-		}
+		this.query += ` FROM ${table}`;
 		return this;
 	};
 
 	this.inners = function (inners) {
-		if (inners.length) {
-			this._inners = true;
-
-			for (let i in inners) {
-				if (inners[i].length == 3) {
-					this.query += "INNER JOIN " + inners[i][0] + " ON " + inners[i][1] + "=" + inners[i][2] + " ";
-				} else if (inners[i].length > 3) {
-					this.query += "LEFT JOIN " + inners[i][0] + " ON (" + inners[i][1] + "=" + inners[i][2] + " AND " + inners[i][3] + "=" + inners[i][4] + ") ";
-				}
-			};
-		}
-		return this;
-	};
-
-	this.left = function (inners) {
-		if (inners.length) {
-			this._left = true;
-
-			for (let i in inners) {
-				if (inners[i].length == 3) {
-					this.query += "LEFT JOIN " + inners[i][0] + " ON " + inners[i][1] + "=" + inners[i][2] + " ";
-				} else if (inners[i].length > 3) {
-					this.query += "LEFT JOIN " + inners[i][0] + " ON (" + inners[i][1] + "=" + inners[i][2] + " AND " + inners[i][3] + "=" + inners[i][4] + ") ";
-				}
-			};
-		}
-		return this;
-	};
-
-	this.right = function (inners) {
-		if (inners.length) {
-			this._right = true;
-
-			for (let i in inners) {
-				if (inners[i].length == 3) {
-					this.query += "RIGHT JOIN " + inners[i][0] + " ON " + inners[i][1] + "=" + inners[i][2] + " ";
-				} else if (inners[i].length > 3) {
-					this.query += "RIGHT JOIN " + inners[i][0] + " ON (" + inners[i][1] + "=" + inners[i][2] + " AND " + inners[i][3] + "=" + inners[i][4] + ") ";
-				}
-			};
+		for (let i = 0; i < inners.length; i++) {
+			if (inners[i].length === 3) {
+				this.query += ` INNER JOIN ${inners[i][0]} ON ${inners[i][1]} = ${inners[i][2]}`;
+			} else if (inners[i].length > 3) {
+				this.query += ` LEFT JOIN ${inners[i][0]} ON (${inners[i][1]} = ? AND ${inners[i][3]} = ?)`;
+				this.values.push(inners[i][2], inners[i][4]);
+			}
 		}
 		return this;
 	};
 
 	this.period = function (period) {
 		if (period.key && period.start && period.end) {
-			this._period = true;
-
-			this.query += "WHERE " + period.key + ">='" + period.start + "' AND " + period.key + "<='" + period.end + "' ";
-		};
+			if (!this.whereUsed) {
+				this.query += " WHERE";
+				this.whereUsed = true;
+			} else {
+				this.query += " AND";
+			}
+			this.query += ` ${period.key} >= ? AND ${period.key} <= ?`;
+			this.values.push(period.start, period.end);
+		}
 		return this;
 	};
 
 	this.params = function (params) {
-		if (params.keys.length) {
-			this._params = true;
+		if (params.keys.length && params.values.length) {
+			if (!this.whereUsed) {
+				this.query += " WHERE";
+				this.whereUsed = true;
+			} else {
+				this.query += " AND";
+			}
 
-			if (this._period) { this.query += "AND "; } else { this.query += "WHERE "; }
-
-			for (let i in params.keys) {
-				if (i == params.keys.length - 1) {
-					this.query += params.keys[i] + " like '%" + params.values[i] + "%' ";
-				} else {
-					this.query += params.keys[i] + " like '%" + params.values[i] + "%' AND ";
-				};
-			};
+			for (let i = 0; i < params.keys.length; i++) {
+				if (i > 0) {
+					this.query += " AND";
+				}
+				this.query += ` ${params.keys[i]} LIKE ?`;
+				this.values.push(`%${params.values[i]}%`);
+			}
 		}
 		return this;
 	};
 
 	this.strictParams = function (strict_params) {
-		if (strict_params.keys.length) {
-			this._strict_params = true;
+		if (strict_params.keys.length && strict_params.values.length) {
+			if (!this.whereUsed) {
+				this.query += " WHERE";
+				this.whereUsed = true;
+			} else {
+				this.query += " AND";
+			}
 
-			if (this._period || this._params) { this.query += "AND "; } else { this.query += "WHERE "; }
-
-			for (let i in strict_params.keys) {
-				if (i == strict_params.keys.length - 1) {
-					this.query += strict_params.keys[i] + "='" + strict_params.values[i] + "' ";
-				} else {
-					this.query += strict_params.keys[i] + "='" + strict_params.values[i] + "' AND ";
-				};
-			};
-		};
+			for (let i = 0; i < strict_params.keys.length; i++) {
+				if (i > 0) {
+					this.query += " AND";
+				}
+				this.query += ` ${strict_params.keys[i]} = ?`;
+				this.values.push(strict_params.values[i]);
+			}
+		}
 		return this;
 	};
 
 	this.order = function (orderParams) {
 		if (orderParams.length && orderParams[0].length > 1) {
-			this._order_params = true;
-
-			this.query += "ORDER BY ";
-			for (let i in orderParams) {
-				if (i == orderParams.length - 1) {
-					this.query += orderParams[i][0] + " " + orderParams[i][1] + " ";
-				} else {
-					this.query += orderParams[i][0] + " " + orderParams[i][1] + ", ";
-				};
-			};
+			this.query += " ORDER BY ";
+			for (let i = 0; i < orderParams.length; i++) {
+				if (i > 0) {
+					this.query += ", ";
+				}
+				this.query += ` ${orderParams[i][0]} ${orderParams[i][1]}`;
+			}
 		}
 		return this;
 	};
 
 	this.limit = function (limit) {
-		if (limit.length || limit > 0) {
-			this._limit = true;
-			this.query += "LIMIT " + limit;
+		if (limit) {
+			this.query += " LIMIT ?";
+			this.values.push(limit);
 		}
 		return this;
 	};
 
 	this.build = function () {
-		this.query = this.query.trim() + ";";
-		return this;
+		return {
+			query: this.query,
+			values: this.values
+		};
 	};
 };
 
 JALIB.Query.fillParam = function (key, value, arr) {
-	if (key && value && arr.keys && arr.values) { arr.keys.push(key); arr.values.push(value); } else { return false; };
+	if (key && value && arr.keys && arr.values) {
+		arr.keys.push(key);
+		arr.values.push(value);
+	} else {
+		return false;
+	};
 };
 
 JALIB.Query.save = function (obj, db) {
-	let attributesAsArray = Object.entries(obj);
-	let query = "INSERT INTO " + db + " ";
-	let queryProps = "(";
-	let queryValues = "(";
+	const attributesAsArray = Object.entries(obj);
 
-	attributesAsArray.forEach(([key, value], index, array) => {
-		if (typeof value == 'number' || typeof value == 'string') {
-			if (key && value && index == array.length - 1) {
-				queryProps += key + "";
-				queryValues += "'" + value + "'";
-			} else if (key && value) {
-				queryProps += key + ",";
-				queryValues += "'" + value + "',";
-			}
-		}
+	const validAttributes = attributesAsArray.filter(([key, value]) => {
+		return typeof value === 'number' || typeof value === 'string';
 	});
 
-	queryProps += ")";
-	queryValues += ")";
+	if (validAttributes.length === 0) {
+		return false;
+	}
 
-	query += queryProps + " VALUES " + queryValues + ";";
+	const props = validAttributes.map(([key]) => key).join(', ');
+	const values = validAttributes.map(([key, value]) => value);
 
-	return query;
+	const query = `INSERT INTO ${db} (${props}) VALUES (${values.map(() => '?').join(', ')});`;
+
+	return { query, values };
 };
 
 JALIB.Query.update = function (obj, db, param) {
-	let attributesAsArray = Object.entries(obj);
-	let query = "UPDATE " + db + " SET ";
-	if (!param) { return false; }
+	if (!param || !db) { return false; }
 
-	attributesAsArray.forEach(([key, value], index, array) => {
-		if (typeof value == 'number' || typeof value == 'string') {
-			if (key && value && index == array.length - 1) {
-				query += key + "='" + value + "' ";
-			} else if (key && value && key != param) {
-				query += key + "='" + value + "', ";
-			};
-		};
+	const validAttributes = Object.entries(obj).filter(([key, value]) => {
+		return typeof value === 'number' || typeof value === 'string';
 	});
 
-	attributesAsArray.forEach(([key, value]) => {
-		if (key == param) {
-			if (key && value) {
-				query += "WHERE " + key + "='" + value + "';";
-			} else {
-				query = false;
-			}
-		}
-	});
+	if (validAttributes.length === 0) { return false; }
 
-	return query;
+	let updateClause = validAttributes.map(([key]) => `${key} = ?`).join(', ');
+
+	const whereClause = validAttributes.find(([key]) => key === param);
+
+	if (!whereClause) { return false; }
+
+	const query = `UPDATE ${db} SET ${updateClause} WHERE ${whereClause[0]} = ?`;
+
+	const values = validAttributes.map(([_, value]) => value);
+	values.push(whereClause[1]);
+
+	return { query, values };
 };
 
 // -----------
