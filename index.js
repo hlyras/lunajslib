@@ -182,7 +182,7 @@ JALIB.convertTo.object = function (target) {
 	let obj = {};
 	let attributesAsArray = Object.entries(target);
 	attributesAsArray.forEach(([key, value]) => {
-		if (key && value) {
+		if (key && value != null && value != undefined) {
 			if (typeof value == 'number' || typeof value == 'string') {
 				obj[key] = value;
 			};
