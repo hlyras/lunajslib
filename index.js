@@ -32,8 +32,7 @@ JALIB.Query = function () {
 			if (inners[i].length === 3) {
 				this.query += ` INNER JOIN ${inners[i][0]} ON ${inners[i][1]} = ${inners[i][2]}`;
 			} else if (inners[i].length > 3) {
-				this.query += ` LEFT JOIN ${inners[i][0]} ON (${inners[i][1]} = ? AND ${inners[i][3]} = ?)`;
-				this.values.push(inners[i][2], inners[i][4]);
+				this.query += ` LEFT JOIN ${inners[i][0]} ON (${inners[i][1]} = ${inners[i][2]} AND ${inners[i][3]} = ${inners[i][4]})`;
 			}
 		}
 		return this;
@@ -182,7 +181,7 @@ JALIB.convertTo.object = function (target) {
 	let obj = {};
 	let attributesAsArray = Object.entries(target);
 	attributesAsArray.forEach(([key, value]) => {
-		if (key && value != null && value != undefined) {
+		if (key && value) {
 			if (typeof value == 'number' || typeof value == 'string') {
 				obj[key] = value;
 			};
