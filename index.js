@@ -15,7 +15,8 @@ JALIB.Query = function () {
 	};
 
 	this.props = function (props) {
-		this._props = true;
+		if (props.length) { this._props = true; }
+
 		for (let i in props) {
 			if (props.length == i + 1) {
 				this.query += `${props[i]} `;
