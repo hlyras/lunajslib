@@ -6,6 +6,7 @@ const JALIB = {};
 JALIB.Query = function () {
 	this.query = "";
 	this.values = [];
+	this._props = false;
 	this.whereUsed = false;
 
 	this.select = function () {
@@ -14,16 +15,23 @@ JALIB.Query = function () {
 	};
 
 	this.props = function (props) {
-		if (props.length) {
-			this.query += props.join(", ");
-		} else if (!this.query.includes("FROM")) {
-			this.query += "*";
-		}
+		this._props = true;
+		for (let i in props) {
+			if (props.length == i + 1) {
+				this.query += `${props[i]} `;
+			} else {
+				this.query += `${props[i]}, `;
+			}
+		};
 		return this;
 	};
 
 	this.table = function (table) {
-		this.query += ` FROM ${table}`;
+		if (this._props) {
+			this.query += `FROM ${table}`;
+		} else {
+			this.query += `* FROM ${table}`;
+		}
 		return this;
 	};
 
