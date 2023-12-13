@@ -18,7 +18,7 @@ JALIB.Query = function () {
 		if (props.length) { this._props = true; }
 
 		for (let i in props) {
-			if (props.length == i + 1) {
+			if (props.length - 1 == i) {
 				this.query += `${props[i]} `;
 			} else {
 				this.query += `${props[i]}, `;
@@ -41,7 +41,32 @@ JALIB.Query = function () {
 			if (inners[i].length === 3) {
 				this.query += ` INNER JOIN ${inners[i][0]} ON ${inners[i][1]} = ${inners[i][2]}`;
 			} else if (inners[i].length > 3) {
-				this.query += ` LEFT JOIN ${inners[i][0]} ON (${inners[i][1]} = ${inners[i][2]} AND ${inners[i][3]} = ${inners[i][4]})`;
+				this.query += ` INNER JOIN ${inners[i][0]} ON (`
+				for (let j = 1; j <= inners[i].length - 1; j += 2) {
+					if (j >= inners[i].length - 2) {
+						this.query += `${inners[i][j]} = ${inners[i][j + 1]})`;
+					} else {
+						this.query += `${inners[i][j]} = ${inners[i][j + 1]} AND `;
+					};
+				};
+			}
+		}
+		return this;
+	};
+
+	this.lefts = function (lefts) {
+		for (let i = 0; i < lefts.length; i++) {
+			if (lefts[i].length === 3) {
+				this.query += ` LEFT JOIN ${lefts[i][0]} ON ${lefts[i][1]} = ${lefts[i][2]}`;
+			} else if (lefts[i].length > 3) {
+				this.query += ` LEFT JOIN ${lefts[i][0]} ON (`
+				for (let j = 1; j <= lefts[i].length - 1; j += 2) {
+					if (j >= lefts[i].length - 2) {
+						this.query += `${lefts[i][j]} = ${lefts[i][j + 1]})`;
+					} else {
+						this.query += `${lefts[i][j]} = ${lefts[i][j + 1]} AND `;
+					};
+				};
 			}
 		}
 		return this;
