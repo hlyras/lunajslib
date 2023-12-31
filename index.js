@@ -15,6 +15,7 @@ JALIB.Query = function () {
 	};
 
 	this.props = function (props) {
+		if (!props) { return this; }
 		if (props.length) { this._props = true; }
 
 		for (let i in props) {
@@ -24,6 +25,7 @@ JALIB.Query = function () {
 				this.query += `${props[i]}, `;
 			}
 		};
+
 		return this;
 	};
 
@@ -37,6 +39,8 @@ JALIB.Query = function () {
 	};
 
 	this.inners = function (inners) {
+		if (!inners) { return this; }
+
 		for (let i = 0; i < inners.length; i++) {
 			if (inners[i].length === 3) {
 				this.query += ` INNER JOIN ${inners[i][0]} ON ${inners[i][1]} = ${inners[i][2]}`;
@@ -55,6 +59,8 @@ JALIB.Query = function () {
 	};
 
 	this.lefts = function (lefts) {
+		if (!lefts) { return this; }
+
 		for (let i = 0; i < lefts.length; i++) {
 			if (lefts[i].length === 3) {
 				this.query += ` LEFT JOIN ${lefts[i][0]} ON ${lefts[i][1]} = ${lefts[i][2]}`;
@@ -73,6 +79,8 @@ JALIB.Query = function () {
 	};
 
 	this.period = function (period) {
+		if (!period) { return this; }
+
 		if (period.key && period.start && period.end) {
 			if (!this.whereUsed) {
 				this.query += " WHERE";
@@ -87,6 +95,8 @@ JALIB.Query = function () {
 	};
 
 	this.params = function (params) {
+		if (!params) { return this; }
+
 		if (params.keys.length && params.values.length) {
 			if (!this.whereUsed) {
 				this.query += " WHERE";
@@ -103,10 +113,13 @@ JALIB.Query = function () {
 				this.values.push(`%${params.values[i]}%`);
 			}
 		}
+
 		return this;
 	};
 
 	this.strictParams = function (strict_params) {
+		if (!strict_params) { return this; }
+
 		if (strict_params.keys.length && strict_params.values.length) {
 			if (!this.whereUsed) {
 				this.query += " WHERE";
@@ -123,27 +136,34 @@ JALIB.Query = function () {
 				this.values.push(strict_params.values[i]);
 			}
 		}
+
 		return this;
 	};
 
-	this.order = function (orderParams) {
-		if (orderParams.length && orderParams[0].length > 1) {
+	this.order = function (order_params) {
+		if (!order_params) { return this; }
+
+		if (order_params.length && order_params[0].length > 1) {
 			this.query += " ORDER BY ";
-			for (let i = 0; i < orderParams.length; i++) {
+			for (let i = 0; i < order_params.length; i++) {
 				if (i > 0) {
 					this.query += ", ";
 				}
-				this.query += ` ${orderParams[i][0]} ${orderParams[i][1]}`;
+				this.query += ` ${order_params[i][0]} ${order_params[i][1]}`;
 			}
 		}
+
 		return this;
 	};
 
 	this.limit = function (limit) {
+		if (!limit) { return this; }
+
 		if (limit) {
 			this.query += " LIMIT ?";
 			this.values.push(limit);
 		}
+
 		return this;
 	};
 
@@ -215,7 +235,7 @@ JALIB.convertTo.object = function (target) {
 	let obj = {};
 	let attributesAsArray = Object.entries(target);
 	attributesAsArray.forEach(([key, value]) => {
-		if (key && value) {
+		if (key && value != null && value != undefined) {
 			if (typeof value == 'number' || typeof value == 'string') {
 				obj[key] = value;
 			};
