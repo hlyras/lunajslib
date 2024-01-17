@@ -209,18 +209,16 @@ JALIB.Query.update = function (obj, db, param) {
 	const validAttributes = Object.entries(obj).filter(([key, value]) => {
 		return typeof value === 'number' || typeof value === 'string';
 	});
-
 	if (validAttributes.length === 0) { return false; }
 
-	let updateClause = validAttributes.map(([key]) => `${key} = ?`).join(', ');
-
 	const whereClause = validAttributes.find(([key]) => key === param);
-
 	if (!whereClause) { return false; }
 
-	const query = `UPDATE ${db} SET ${updateClause} WHERE ${whereClause[0]} = ?`;
+	const updateAttributes = validAttributes.filter(([key]) => key !== param);
+	let updateClause = updateAttributes.map(([key]) => `${key} = ?`).join(', ');
 
-	const values = validAttributes.map(([_, value]) => value);
+	const query = `UPDATE ${db} SET ${updateClause} WHERE ${whereClause[0]} = ?`;
+	const values = updateAttributes.map(([_, value]) => value);
 	values.push(whereClause[1]);
 
 	return { query, values };
