@@ -1,6 +1,6 @@
 {
   "name": "jarmlib",
-  "version": "1.0.62",
+  "version": "1.0.63",
   "description": "JA back-end framework",
   "main": "index.js",
   "scripts": {
