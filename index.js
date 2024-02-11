@@ -140,11 +140,53 @@ JALIB.Query = function () {
 		return this;
 	};
 
+	this.inParams = function (in_params) {
+		if (!in_params) { return this; }
+
+		let in_value = false;
+
+		for (let i = 0; i < in_params.keys.length; i++) {
+			for (let j = 0; j < in_params.values[i].length; j++) {
+				if (in_params.keys[i] && in_params.values[i][j]) {
+					in_value = true;
+				}
+			};
+		};
+
+		if (!in_value) { return this; }
+
+		for (let i = 0; i < in_params.keys.length; i++) {
+			for (let j in in_params.values[i]) {
+				if (in_params.values[i][j]) {
+					if (!this.whereUsed) {
+						this.query += " WHERE";
+						this.whereUsed = true;
+					} else {
+						this.query += " AND";
+					}
+
+					if (j == 0 && in_params.values[i].length === 1) {
+						this.query += ` ${in_params.keys[i]} in (?)`;
+					} else if (y == 0 && in_params.values[i].length > 1) {
+						this.query += ` ${in_params.keys[i]} in (?,`;
+					} else if (j == in_params.values[i].length - 1) {
+						this.query += `?)`;
+					} else {
+						this.query += `?,`;
+					}
+					this.values.push(in_params.values[i][j]);
+				}
+			};
+		}
+
+		return this;
+	};
+
 	this.order = function (order_params) {
 		if (!order_params) { return this; }
 
 		if (order_params.length && order_params[0].length > 1) {
-			this.query += " ORDER BY ";
+			this.query += " ORDER BY";
 			for (let i = 0; i < order_params.length; i++) {
 				if (i > 0) {
 					this.query += ", ";
@@ -179,6 +221,15 @@ JALIB.Query.fillParam = function (key, value, arr) {
 	if (key && value && arr.keys && arr.values) {
 		arr.keys.push(key);
 		arr.values.push(value);
+	} else {
+		return false;
+	};
+};
+
+JALIB.Query.fillIn = function (key, values, arr) {
+	if (key && values.length && arr.keys && arr.values) {
+		arr.keys.push(key);
+		arr.values.push(values);
 	} else {
 		return false;
 	};
