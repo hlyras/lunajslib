@@ -1,9 +1,9 @@
-const JALIB = {};
+const LunaJS = {};
 
 // -----------
 // Query
 // -----------
-JALIB.Query = function () {
+LunaJS.Query = function () {
 	this.query = "";
 	this.values = [];
 	this._props = false;
@@ -217,7 +217,7 @@ JALIB.Query = function () {
 	};
 };
 
-JALIB.Query.fillParam = function (key, value, arr) {
+LunaJS.Query.fill = function (key, value, arr) {
 	if (key && value && arr.keys && arr.values) {
 		arr.keys.push(key);
 		arr.values.push(value);
@@ -226,16 +226,7 @@ JALIB.Query.fillParam = function (key, value, arr) {
 	};
 };
 
-JALIB.Query.fillIn = function (key, values, arr) {
-	if (key && values.length && arr.keys && arr.values) {
-		arr.keys.push(key);
-		arr.values.push(values);
-	} else {
-		return false;
-	};
-};
-
-JALIB.Query.save = function (obj, db) {
+LunaJS.Query.save = function (obj, db) {
 	const attributesAsArray = Object.entries(obj);
 
 	const validAttributes = attributesAsArray.filter(([key, value]) => {
@@ -254,7 +245,7 @@ JALIB.Query.save = function (obj, db) {
 	return { query, values };
 };
 
-JALIB.Query.update = function (obj, db, param) {
+LunaJS.Query.update = function (obj, db, param) {
 	if (!param || !db) { return false; }
 
 	const validAttributes = Object.entries(obj).filter(([key, value]) => {
@@ -278,9 +269,9 @@ JALIB.Query.update = function (obj, db, param) {
 // -----------
 // convertTo
 // -----------
-JALIB.convertTo = {};
+LunaJS.convertTo = {};
 
-JALIB.convertTo.object = function (target) {
+LunaJS.convertTo.object = function (target) {
 	let obj = {};
 	let attributesAsArray = Object.entries(target);
 	attributesAsArray.forEach(([key, value]) => {
@@ -294,11 +285,22 @@ JALIB.convertTo.object = function (target) {
 };
 
 // -----------
+// Input Validation
+// -----------
+LunaJS.email.validate = email => {
+	return String(email)
+		.toLowerCase()
+		.match(
+			/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+		);
+};
+
+// -----------
 // Date
 // -----------
-JALIB.date = {};
+LunaJS.date = {};
 
-JALIB.date.generate = function () {
+LunaJS.date.generate = function () {
 	var d = new Date();
 	var date = "";
 	if (d.getDate() < 10 && parseInt(d.getMonth()) + 1 > 9) {
@@ -314,30 +316,19 @@ JALIB.date.generate = function () {
 };
 
 // -----------
-// Input Validation
-// -----------
-JALIB.validateEmail = email => {
-	return String(email)
-		.toLowerCase()
-		.match(
-			/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-		);
-};
-
-// -----------
 // Timestamp
 // -----------
-JALIB.date.timestamp = {};
+LunaJS.date.timestamp = {};
 
-JALIB.date.timestamp.day = function () { return 86400000; };
+LunaJS.date.timestamp.day = function () { return 86400000; };
 
-JALIB.date.timestamp.generate = function () {
+LunaJS.date.timestamp.generate = function () {
 	const currentDate = new Date();
 	const timestamp = currentDate.getTime();
 	return timestamp;
 };
 
-JALIB.date.timestamp.toDate = function (timestamp) {
+LunaJS.date.timestamp.toDate = function (timestamp) {
 	let date = new Date(parseInt(timestamp));
 	let day; let month; let hour; let minute;
 	if (date.getDate() < 10) { day = "0" + date.getDate() } else { day = date.getDate() };
@@ -347,7 +338,7 @@ JALIB.date.timestamp.toDate = function (timestamp) {
 	return day + '-' + month + '-' + date.getFullYear() + ' ' + hour + ':' + minute;
 };
 
-JALIB.date.timestamp.toDatetime = function (timestamp) {
+LunaJS.date.timestamp.toDatetime = function (timestamp) {
 	let date = new Date(parseInt(timestamp));
 	let day; let month; let hour; let minute;
 	if (date.getDate() < 10) { day = "0" + date.getDate() } else { day = date.getDate() };
@@ -360,9 +351,9 @@ JALIB.date.timestamp.toDatetime = function (timestamp) {
 // -----------
 // datetime
 // -----------
-JALIB.date.datetime = {};
+LunaJS.date.datetime = {};
 
-JALIB.date.datetime.toTimestamp = function (datetime) {
+LunaJS.date.datetime.toTimestamp = function (datetime) {
 	if (datetime) {
 		let date = datetime.split("T");
 		date.year = date[0].split("-")[0];
@@ -379,9 +370,9 @@ JALIB.date.datetime.toTimestamp = function (datetime) {
 // -----------
 // string
 // -----------
-JALIB.string = {};
+LunaJS.string = {};
 
-JALIB.string.splitBy = function (string, key) {
+LunaJS.string.splitBy = function (string, key) {
 	if (string && key) {
 		let splited_string = string.split(key);
 		return splited_string;
@@ -389,12 +380,12 @@ JALIB.string.splitBy = function (string, key) {
 	return false;
 };
 
-JALIB.string.replaceChar = (string, regex, content) => {
+LunaJS.string.replaceChar = (string, regex, content) => {
 	string = string.replaceAll(regex, content);
 	return string;
 };
 
-JALIB.string.hasForbidden = (str) => {
+LunaJS.string.hasForbidden = (str) => {
 	const forbiddenChars = /[#%&{}\s\\<>*?/$!'":@+,`|[\]^~();¨´áéíóúâêîôûàèìòùäëïöü]/g;
 	const hasForbiddenChar = forbiddenChars.test(str);
 
@@ -408,22 +399,22 @@ JALIB.string.hasForbidden = (str) => {
 // -----------
 // math
 // -----------
-JALIB.math = {};
+LunaJS.math = {};
 
-JALIB.math.round = {};
+LunaJS.math.round = {};
 
-JALIB.math.round.toFloat = function () {
+LunaJS.math.round.toFloat = function () {
 	return Math.round((value) * 100) / 100;
 };
 
-JALIB.math.round.toInt = function () {
+LunaJS.math.round.toInt = function () {
 	return +(parseFloat(num).toFixed(places));
 };
 
 // -----------
 // sort
 // -----------
-JALIB.sort = (arr, key, order) => {
+LunaJS.sort = (arr, key, order) => {
 	return arr = arr.sort((a, b) => {
 		if (order == "desc") {
 			return b[key] - a[key];
@@ -436,9 +427,9 @@ JALIB.sort = (arr, key, order) => {
 // -----------
 // routes
 // -----------
-JALIB.route = {};
+LunaJS.route = {};
 
-JALIB.route.toHttps = function (req, res, next) {
+LunaJS.route.toHttps = function (req, res, next) {
 	if ((req.headers["x-forwarded-proto"] || "").endsWith("http")) {
 		res.redirect(`https://${req.hostname}${req.originalUrl}`);
 	} else {
@@ -446,4 +437,4 @@ JALIB.route.toHttps = function (req, res, next) {
 	}
 };
 
-module.exports = JALIB;
+module.exports = LunaJS;

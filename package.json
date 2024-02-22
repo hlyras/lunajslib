@@ -1,7 +1,7 @@
 {
-  "name": "jarmlib",
-  "version": "1.0.64",
-  "description": "JA back-end framework",
+  "name": "lunajs-be",
+  "version": "1.0.0",
+  "description": "Back-end framework",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,16 +10,10 @@
     "type": "git",
     "url": "git+https://github.com/tijariomilitar/jarmlib.git"
   },
-  "keywords": [
-    "ja",
-    "rio",
-    "militar",
-    "lib"
-  ],
   "author": "Henrique Lyra",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/tijariomilitar/jarmlib/issues"
+    "url": "https://github.com/hlyras/lunajs-be/issues"
   },
-  "homepage": "https://github.com/tijariomilitar/jarmlib#readme"
+  "homepage": "https://github.com/hlyras/lunajs-be#readme"
 }
