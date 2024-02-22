@@ -1,5 +1,5 @@
 {
-  "name": "lunajs-be",
+  "name": "lunajslib",
   "version": "1.0.0",
   "description": "Back-end framework",
   "main": "index.js",
