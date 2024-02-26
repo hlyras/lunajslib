@@ -167,7 +167,7 @@ LunaJS.Query = function () {
 
 					if (j == 0 && in_params.values[i].length === 1) {
 						this.query += ` ${in_params.keys[i]} in (?)`;
-					} else if (y == 0 && in_params.values[i].length > 1) {
+					} else if (j == 0 && in_params.values[i].length > 1) {
 						this.query += ` ${in_params.keys[i]} in (?,`;
 					} else if (j == in_params.values[i].length - 1) {
 						this.query += `?)`;
@@ -287,6 +287,8 @@ LunaJS.convertTo.object = function (target) {
 // -----------
 // Input Validation
 // -----------
+LunaJS.email = {};
+
 LunaJS.email.validate = email => {
 	return String(email)
 		.toLowerCase()
